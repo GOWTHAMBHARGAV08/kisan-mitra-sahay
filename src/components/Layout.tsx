@@ -49,9 +49,11 @@ const Layout = () => {
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           {/* Logo */}
           <div className="flex items-center space-x-3">
-            <div className="bg-gradient-primary p-2 rounded-xl">
-              <Leaf className="w-6 h-6 text-primary-foreground" />
-            </div>
+            <img 
+              src="/lovable-uploads/9bde51b7-d1b6-4155-b1dd-8d6dc6201869.png" 
+              alt="KisanMitra Logo" 
+              className="w-10 h-10 rounded-xl"
+            />
             <h1 className="text-xl font-bold text-primary">KisanMitra</h1>
           </div>
 
