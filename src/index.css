@@ -2,41 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* KisanMitra Design System - Agriculture Assistant for Indian Farmers
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
+    /* Agriculture-themed color palette */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 198 39% 13%; /* Deep charcoal for text */
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 198 39% 13%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 198 39% 13%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Fresh forest green primary */
+    --primary: 127 57% 22%; /* #1B5E20 deep forest green */
+    --primary-foreground: 0 0% 98%;
+    --primary-light: 124 36% 48%; /* #43A047 lighter green */
+    
+    /* Warm earth brown secondary */
+    --secondary: 20 29% 29%; /* #5D4037 earth brown */
+    --secondary-foreground: 0 0% 98%;
+    --secondary-light: 45 15% 90%; /* Light earth tone */
+    
+    /* Sunshine yellow accent */
+    --accent: 48 96% 57%; /* #FBC02D bright yellow */
+    --accent-foreground: 198 39% 13%;
+    --accent-soft: 48 95% 85%; /* Soft yellow for highlights */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 0 0% 96%; /* #F5F5F5 */
+    --muted-foreground: 198 20% 40%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Status colors for agriculture */
+    --success: 127 57% 22%; /* Same as primary green */
+    --success-foreground: 0 0% 98%;
+    
+    --warning: 48 96% 57%; /* Same as accent yellow */
+    --warning-foreground: 198 39% 13%;
+    
+    --danger: 0 84% 52%; /* Red for high risk */
+    --danger-foreground: 0 0% 98%;
+    
+    --info: 206 100% 45%; /* Blue for information */
+    --info-foreground: 0 0% 98%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84% 52%;
+    --destructive-foreground: 0 0% 98%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --border: 127 20% 88%; /* Soft green-tinted border */
+    --input: 127 20% 88%;
+    --ring: 127 57% 22%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --radius: 0.75rem; /* Rounded corners for friendly feel */
 
-    --radius: 0.5rem;
+    /* Agriculture-specific gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(127 57% 22%), hsl(124 36% 48%));
+    --gradient-earth: linear-gradient(135deg, hsl(20 29% 29%), hsl(20 29% 40%));
+    --gradient-sunshine: linear-gradient(135deg, hsl(48 96% 57%), hsl(48 96% 65%));
+    --gradient-field: linear-gradient(180deg, hsl(124 36% 48%), hsl(127 57% 22%));
+    
+    /* Elegant shadows with green tint */
+    --shadow-soft: 0 4px 12px hsl(127 57% 22% / 0.1);
+    --shadow-card: 0 8px 24px hsl(127 57% 22% / 0.12);
+    --shadow-floating: 0 12px 32px hsl(127 57% 22% / 0.15);
+    
+    /* Smooth transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
 
@@ -56,41 +91,23 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Dark mode support for future */
+    --background: 127 57% 8%;
+    --foreground: 0 0% 98%;
+    --card: 127 57% 10%;
+    --card-foreground: 0 0% 98%;
+    --primary: 124 36% 48%;
+    --primary-foreground: 127 57% 8%;
+    --muted: 127 30% 15%;
+    --muted-foreground: 127 10% 70%;
+    --sidebar-background: 127 57% 8%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 124 36% 48%;
+    --sidebar-primary-foreground: 127 57% 8%;
+    --sidebar-accent: 127 30% 15%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 127 30% 15%;
+    --sidebar-ring: 124 36% 48%;
   }
 }
 
@@ -100,6 +117,76 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+@layer components {
+  /* Agriculture-specific component styles */
+  .weather-card {
+    @apply bg-card border border-border rounded-2xl p-6;
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-smooth);
+  }
+  
+  .weather-card:hover {
+    box-shadow: var(--shadow-floating);
+    transform: translateY(-2px);
+  }
+  
+  .quick-action-card {
+    @apply bg-gradient-to-br from-primary to-primary-light text-primary-foreground rounded-2xl p-4;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition-bounce);
+  }
+  
+  .quick-action-card:active {
+    transform: scale(0.98);
+  }
+  
+  .alert-banner {
+    @apply rounded-xl p-4 border-l-4;
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .alert-high {
+    @apply bg-red-50 border-l-red-500 text-red-800;
+  }
+  
+  .alert-medium {
+    @apply bg-amber-50 border-l-amber-500 text-amber-800;
+  }
+  
+  .alert-low {
+    @apply bg-green-50 border-l-green-500 text-green-800;
+  }
+  
+  .recommendation-card {
+    @apply bg-gradient-to-r from-accent-soft to-accent/20 border border-accent/30 rounded-2xl p-6;
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .nav-pill {
+    transition: var(--transition-smooth);
+  }
+  
+  .nav-pill.active {
+    background: var(--gradient-primary);
+    @apply text-primary-foreground shadow-lg;
+  }
+  
+  .floating-action {
+    @apply bg-accent text-accent-foreground rounded-full p-4;
+    box-shadow: var(--shadow-floating);
+    transition: var(--transition-bounce);
+  }
+  
+  .floating-action:hover {
+    transform: scale(1.05);
+  }
+  
+  .chart-container {
+    @apply bg-card rounded-xl p-4 border border-border;
+    box-shadow: var(--shadow-soft);
   }
 }
