@@ -1,45 +1,105 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RefreshCw, Calendar, MapPin, Download, Share2, Sun, Cloud, CloudRain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WeatherCard from '@/components/WeatherCard';
+import LocationSelector from '@/components/LocationSelector';
+import ApiKeySetup from '@/components/ApiKeySetup';
+import { LocationData } from '@/lib/locationService';
+import { WeatherService, WeatherForecast } from '@/lib/weatherService';
+import { useToast } from '@/hooks/use-toast';
 
 const Weather = () => {
   const [selectedField, setSelectedField] = useState('Field A');
+  const [location, setLocation] = useState<LocationData | undefined>();
+  const [weatherData, setWeatherData] = useState<WeatherForecast | undefined>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiKey, setApiKey] = useState('');
+  const { toast } = useToast();
   
   const fields = ['Field A - Rice', 'Field B - Cotton', 'Field C - Maize'];
-  
-  const forecastData = [
-    { day: 'Today', icon: Sun, tempMin: 24, tempMax: 32, rain: 20, wind: 12 },
-    { day: 'Tomorrow', icon: CloudRain, tempMin: 22, tempMax: 28, rain: 80, wind: 15 },
-    { day: 'Wednesday', icon: Cloud, tempMin: 25, tempMax: 30, rain: 40, wind: 10 },
-    { day: 'Thursday', icon: Sun, tempMin: 26, tempMax: 34, rain: 10, wind: 8 },
-    { day: 'Friday', icon: Sun, tempMin: 28, tempMax: 36, rain: 5, wind: 6 },
-    { day: 'Saturday', icon: CloudRain, tempMin: 23, tempMax: 29, rain: 70, wind: 18 },
-    { day: 'Sunday', icon: Cloud, tempMin: 24, tempMax: 31, rain: 30, wind: 12 },
-  ];
+
+  const handleApiKeySet = (key: string) => {
+    setApiKey(key);
+  };
+
+  const handleLocationChange = async (newLocation: LocationData) => {
+    setLocation(newLocation);
+    if (apiKey) {
+      await fetchWeatherData(newLocation);
+    }
+  };
+
+  const fetchWeatherData = async (locationData: LocationData) => {
+    setIsLoading(true);
+    try {
+      const forecast = await WeatherService.getWeatherForecast(locationData);
+      setWeatherData(forecast);
+    } catch (error) {
+      console.error('Failed to fetch weather data:', error);
+      toast({
+        title: "Weather data unavailable",
+        description: "Unable to fetch current weather. Please check your connection and try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRefreshWeather = () => {
+    if (location && apiKey) {
+      fetchWeatherData(location);
+    }
+  };
+
+  const getWeatherIcon = (iconCode: string) => {
+    // Map OpenWeather icons to Lucide icons
+    if (iconCode.includes('01')) return Sun;
+    if (iconCode.includes('02') || iconCode.includes('03') || iconCode.includes('04')) return Cloud;
+    if (iconCode.includes('09') || iconCode.includes('10') || iconCode.includes('11')) return CloudRain;
+    return Sun;
+  };
 
   return (
     <div className="min-h-screen bg-muted/30">
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+        {/* API Key Setup */}
+        <ApiKeySetup onApiKeySet={handleApiKeySet} />
+        
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Weather Forecast</h1>
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
-              <MapPin className="w-4 h-4" />
-              <span>Guntur, Andhra Pradesh</span>
-              <span>•</span>
-              <span>Updated 2 mins ago</span>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Weather Forecast</h1>
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
+                {weatherData?.current && (
+                  <>
+                    <span>Updated {weatherData.current.lastUpdated}</span>
+                  </>
+                )}
+              </div>
             </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center space-x-2"
+              onClick={handleRefreshWeather}
+              disabled={isLoading || !location}
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <span>Update</span>
+            </Button>
           </div>
-          <Button variant="outline" size="sm" className="flex items-center space-x-2">
-            <RefreshCw className="w-4 h-4" />
-            <span>Update</span>
-          </Button>
+          
+          {/* Location Selector */}
+          <LocationSelector
+            onLocationChange={handleLocationChange}
+            currentLocation={location}
+          />
         </div>
 
         {/* Current Weather */}
-        <WeatherCard />
+        <WeatherCard data={weatherData?.current} isLoading={isLoading} />
 
         {/* Field Selection */}
         <div className="bg-card rounded-2xl p-4 shadow-card">
@@ -78,34 +138,63 @@ const Weather = () => {
           </div>
 
           <div className="grid gap-3">
-            {forecastData.map((day, index) => {
-              const Icon = day.icon;
-              return (
-                <div key={index} className="bg-card rounded-xl p-4 shadow-soft">
+            {isLoading ? (
+              // Loading skeleton
+              Array.from({ length: 7 }).map((_, index) => (
+                <div key={index} className="bg-card rounded-xl p-4 shadow-soft animate-pulse">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <div className="text-sm font-medium text-foreground w-20">
-                        {day.day}
-                      </div>
-                      <Icon className="w-6 h-6 text-primary" />
-                      <div className="text-sm text-muted-foreground">
-                        {day.tempMin}° - {day.tempMax}°C
-                      </div>
+                      <div className="h-4 bg-muted rounded w-20"></div>
+                      <div className="w-6 h-6 bg-muted rounded"></div>
+                      <div className="h-4 bg-muted rounded w-24"></div>
                     </div>
-                    <div className="flex items-center space-x-6 text-sm">
-                      <div className="text-center">
-                        <div className="text-info font-medium">{day.rain}%</div>
-                        <div className="text-xs text-muted-foreground">Rain</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-muted-foreground font-medium">{day.wind} km/h</div>
-                        <div className="text-xs text-muted-foreground">Wind</div>
-                      </div>
+                    <div className="flex items-center space-x-6">
+                      <div className="h-4 bg-muted rounded w-8"></div>
+                      <div className="h-4 bg-muted rounded w-12"></div>
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              ))
+            ) : (
+              (weatherData?.forecast || []).map((day, index) => {
+                const Icon = getWeatherIcon(day.icon);
+                return (
+                  <div key={index} className="bg-card rounded-xl p-4 shadow-soft">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="text-sm font-medium text-foreground w-20">
+                          {day.day}
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {day.icon ? (
+                            <img 
+                              src={WeatherService.getWeatherIconUrl(day.icon)}
+                              alt={day.condition}
+                              className="w-6 h-6"
+                            />
+                          ) : (
+                            <Icon className="w-6 h-6 text-primary" />
+                          )}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {day.tempMin}° - {day.tempMax}°C
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-6 text-sm">
+                        <div className="text-center">
+                          <div className="text-info font-medium">{day.rain}%</div>
+                          <div className="text-xs text-muted-foreground">Rain</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-muted-foreground font-medium">{day.wind} km/h</div>
+                          <div className="text-xs text-muted-foreground">Wind</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </section>
 
