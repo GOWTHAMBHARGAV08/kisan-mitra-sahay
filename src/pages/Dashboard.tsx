@@ -1,11 +1,36 @@
-import React from 'react';
-import { Calendar, TrendingUp, Bug, Droplets, AlertTriangle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Calendar, TrendingUp, Bug, Droplets, AlertTriangle, MessageCircle, Send } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useNavigate } from 'react-router-dom';
 import WeatherCard from '@/components/WeatherCard';
 import QuickActionCard from '@/components/QuickActionCard';
 import PestRiskGauge from '@/components/PestRiskGauge';
 import heroField from '@/assets/hero-field.jpg';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const [chatInput, setChatInput] = useState('');
+
+  const quickChatPrompts = [
+    { icon: TrendingUp, text: 'Check plant health 🌱', action: () => handleChatPrompt('How to check plant health?') },
+    { icon: Droplets, text: 'Get weather forecast 🌦️', action: () => handleChatPrompt('What\'s the weather forecast?') },
+    { icon: Bug, text: 'Pest identification', action: () => handleChatPrompt('Help identify pests in my crop') },
+    { icon: Calendar, text: 'Farming calendar', action: () => handleChatPrompt('Show me farming calendar for this season') }
+  ];
+
+  const handleChatPrompt = (prompt: string) => {
+    setChatInput(prompt);
+    // Navigate to chat with the prompt
+    navigate('/chat', { state: { initialMessage: prompt } });
+  };
+
+  const handleChatSubmit = () => {
+    if (chatInput.trim()) {
+      navigate('/chat', { state: { initialMessage: chatInput } });
+    }
+  };
+
   const quickActions = [
     {
       icon: Calendar,
@@ -61,19 +86,83 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-muted/30">
-      {/* Hero Section */}
+      {/* Hero Chat Section - First Element */}
+      <div className="bg-card border-b border-border">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          {/* Welcome Message */}
+          <div className="text-center mb-6">
+            <div className="bg-gradient-primary p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              <MessageCircle className="w-8 h-8 text-primary-foreground" />
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+              👋 Welcome! I'm your KisanMitra Assistant
+            </h1>
+            <p className="text-muted-foreground text-base md:text-lg">
+              How can I help you today – check plant health 🌱 or get weather forecast 🌦️?
+            </p>
+          </div>
+
+          {/* Quick Chat Input */}
+          <div className="bg-muted/50 rounded-2xl p-6 mb-6">
+            <div className="flex items-center space-x-3">
+              <div className="flex-1 relative">
+                <Input
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  placeholder="Ask me about weather, crops, pests, fertilizers..."
+                  onKeyPress={(e) => e.key === 'Enter' && handleChatSubmit()}
+                  className="pr-12 h-12 text-base"
+                />
+                <Button
+                  size="sm"
+                  onClick={handleChatSubmit}
+                  className="absolute right-1 top-1 bottom-1 px-4"
+                  disabled={!chatInput.trim()}
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Chat Prompts */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {quickChatPrompts.map((prompt, index) => {
+              const Icon = prompt.icon;
+              return (
+                <button
+                  key={index}
+                  onClick={prompt.action}
+                  className="bg-card border border-border rounded-xl p-4 text-left hover:bg-muted/50 transition-colors group"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-primary/10 p-2 rounded-lg group-hover:bg-primary/20 transition-colors">
+                      <Icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <span className="text-sm font-medium text-foreground">
+                      {prompt.text}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Secondary Hero Section */}
       <div 
-        className="relative h-32 md:h-40 bg-cover bg-center"
+        className="relative h-24 md:h-32 bg-cover bg-center"
         style={{ backgroundImage: `url(${heroField})` }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-primary/60" />
         <div className="relative h-full flex items-center px-4 md:px-6">
           <div className="max-w-7xl mx-auto w-full">
-            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
-              Good Morning, Farmer! 🌱
-            </h1>
-            <p className="text-white/90 text-sm md:text-base">
-              Today is {new Date().toLocaleDateString('en-IN', { 
+            <h2 className="text-lg md:text-xl font-semibold text-white mb-1">
+              Today's Farm Dashboard
+            </h2>
+            <p className="text-white/90 text-sm">
+              {new Date().toLocaleDateString('en-IN', { 
                 weekday: 'long', 
                 year: 'numeric', 
                 month: 'long', 

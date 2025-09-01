@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Send, Paperclip, Phone, MessageCircle, TrendingUp, Bug, Droplets } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useLocation } from 'react-router-dom';
 
 interface Message {
   id: string;
@@ -15,16 +16,55 @@ interface Message {
 }
 
 const Chat = () => {
+  const location = useLocation();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       type: 'assistant',
-      content: '🌱 Hello! I\'m KisanMitra, your AI agriculture assistant. How can I help you today?',
+      content: '👋 Welcome! I\'m your KisanMitra Assistant. How can I help you today – check plant health 🌱 or get weather forecast 🌦️?',
       timestamp: new Date(),
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isOnline] = useState(true);
+
+  // Handle initial message from navigation state
+  useEffect(() => {
+    const initialMessage = location.state?.initialMessage;
+    if (initialMessage) {
+      setInputMessage(initialMessage);
+      // Auto-send the message after a short delay
+      setTimeout(() => {
+        if (initialMessage.trim()) {
+          const userMessage: Message = {
+            id: Date.now().toString(),
+            type: 'user',
+            content: initialMessage,
+            timestamp: new Date()
+          };
+
+          setMessages(prev => [...prev, userMessage]);
+
+          // Simulate AI response
+          setTimeout(() => {
+            const response: Message = {
+              id: (Date.now() + 1).toString(),
+              type: 'assistant',
+              content: getSimulatedResponse(initialMessage),
+              timestamp: new Date(),
+              actions: [
+                { label: 'View Weather', action: 'weather' },
+                { label: 'Open Store', action: 'store' }
+              ]
+            };
+            setMessages(prev => [...prev, response]);
+          }, 1000);
+
+          setInputMessage('');
+        }
+      }, 500);
+    }
+  }, [location.state]);
 
   const suggestedPrompts = [
     { icon: TrendingUp, text: 'Will it rain today?', category: 'weather' },
